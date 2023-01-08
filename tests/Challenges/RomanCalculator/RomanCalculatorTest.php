@@ -57,6 +57,35 @@ class RomanCalculatorTest extends TestCase
 
         $this->assertEquals(3724, $result);
     }
+
+    public function test_RomanCalculator_ShouldCalculateOnePlusOne(): void
+    {
+        $romanCalculator = new RomanCalculator();
+        $result = $romanCalculator->sum('I', 'I');
+
+        $this->assertEquals('II', $result);
+    }
+
+    public function providerInputsToSum(): \Generator
+    {
+        yield 'MMMDCCXXIV + LXXVIII = MMMDCCCII' => [$inputOne = 'MMMDCCXXIV', $inputTwo = 'LXXVIII', $result = 'MMMDCCCII'];
+        yield 'L + L = C' => [$inputOne = 'L', $inputTwo = 'L', $result = 'C'];
+        yield 'XIX + XL = C' => [$inputOne = 'XIX', $inputTwo = 'XL', $result = 'LIX'];
+        yield 'V + IV = IX' => [$inputOne = 'V', $inputTwo = 'IV', $result = 'IX'];
+        yield 'CXLIX + IV = CLIII' => [$inputOne = 'CXLIX', $inputTwo = 'IV', $result = 'CLIII'];
+        yield 'MMMCDXLIX + MMMCDXLIX = (V)MDCCCXCVIII' => [$inputOne = 'MMMCDXLIX', $inputTwo = 'MMMCDXLIX', $result = '(V)MDCCCXCVIII'];
+    }
+
+    /**
+     * @dataProvider providerInputsToSum
+     */
+    public function test_RomanCalculator_ShouldSumCorrectly(string $inputOne, string $inputTwo, string $expectedResult): void
+    {
+        $romanCalculator = new RomanCalculator();
+        $result = $romanCalculator->sum($inputOne, $inputTwo);
+
+        $this->assertEquals($expectedResult, $result);
+    }
 }
 
 
