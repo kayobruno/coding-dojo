@@ -4,102 +4,39 @@ declare(strict_types=1);
 
 namespace App\Challenges\RomanCalculator;
 
-class RomanCalculator
+final class RomanCalculator
 {
+    private const NUMERALS_MAX_REPETITION = [
+        3 => ['I', 'X', 'C', 'M'],
+        1 => ['V', 'L', 'D']
+    ];
+
+    public function __construct(protected NumeralConverter $numeralConverter)
+    {}
+
     public function sum(string $valueOne, string $valueTwo): string
     {
-        $this->validateNumerals($valueOne);
-        $this->validateNumerals($valueTwo);
+        $this->validateNumerals(...[$valueOne, $valueTwo]);
 
-        $arabicnumeralOne = $this->convertRomanNumeralToArabicNumeral($valueOne);
-        $arabicnumeralTwo = $this->convertRomanNumeralToArabicNumeral($valueTwo);
+        $arabicNumeralInputOne = $this->numeralConverter->convertRomanToArabicNumeral($valueOne);
+        $arabicNumeralInputTwo = $this->numeralConverter->convertRomanToArabicNumeral($valueTwo);
 
-        $total = $arabicnumeralOne + $arabicnumeralTwo;
+        $total = $arabicNumeralInputOne + $arabicNumeralInputTwo;
 
-        return $this->convertArabicNumeralToRomanNumeral($total);
+        return $this->numeralConverter->convertArabicToRomanNumeral((string) $total);
     }
 
-    private function validateNumerals(string $value): void
+    /**
+     * @throws \Exception
+     */
+    private function validateNumerals(string $romanNumeral): void
     {
-        $numeralsAndMaxRepetition = [
-            'I' => 3,
-            'X' => 3,
-            'C' => 3,
-            'V' => 1,
-            'L' => 1,
-            'D' => 1,
-        ];
-
-        foreach ($numeralsAndMaxRepetition as $numeral => $maxRepetition) {
-            if (substr_count($value, $numeral) > $maxRepetition) {
-                throw new \Exception("The numeral {$numeral} is invalid");
-            }
-        }
-    }
-
-    private function numeralMapper(): array
-    {
-        return [
-            '(M)' => 1000000,
-            '(D)' => 500000,
-            '(C)' => 100000,
-            '(L)' => 50000,
-            '(X)' => 10000,
-            '(V)' => 5000,
-            'M' => 1000,
-            'CM' => 900,
-            'D' => 500,
-            'CD' => 400,
-            'C' => 100,
-            'XC' => 90,
-            'L' => 50,
-            'XL' => 40,
-            'X' => 10,
-            'IX' => 9,
-            'V' => 5,
-            'IV' => 4,
-            'I' => 1,
-        ];
-    }
-
-    public function convertRomanNumeralToArabicNumeral(string $romanNumerals): int
-    {
-        $numeralMapper = $this->numeralMapper();
-        $romanNumerals = str_split(strrev($romanNumerals));
-
-        $arabicNumeral = 0;
-        $lastNumeral = '';
-        foreach ($romanNumerals as $romanNumeral) {
-            if (isset($numeralMapper[$romanNumeral])) {
-                if ($lastNumeral !== '' && $numeralMapper[$romanNumeral] < $numeralMapper[$lastNumeral]) {
-                    $arabicNumeral -= $numeralMapper[$romanNumeral];
-                    $lastNumeral = $romanNumeral;
-                    continue;
+        foreach (self::NUMERALS_MAX_REPETITION as $maxRepetition => $numerals) {
+            array_map(function ($value) use ($romanNumeral, $maxRepetition) {
+                if (substr_count($romanNumeral, $value) > $maxRepetition) {
+                    throw new \Exception("The numeral is invalid");
                 }
-
-                $arabicNumeral += $numeralMapper[$romanNumeral];
-                $lastNumeral = $romanNumeral;
-            }
+            }, $numerals);
         }
-
-        return $arabicNumeral;
-    }
-
-    public function convertArabicNumeralToRomanNumeral(int $arabicNumeral): string
-    {
-        $romanNumeral = '';
-        $mapper = $this->numeralMapper();
-
-        while ($arabicNumeral > 0) {
-            foreach ($mapper as $key => $value) {
-                if ($arabicNumeral >= $value) {
-                    $romanNumeral .= $key;
-                    $arabicNumeral -= $value;
-                    break;
-                }
-            }
-        }
-
-        return $romanNumeral;
     }
 }
