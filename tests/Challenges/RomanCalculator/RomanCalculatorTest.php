@@ -9,12 +9,17 @@ use PHPUnit\Framework\TestCase;
 
 class RomanCalculatorTest extends TestCase
 {
+    private RomanCalculator $calculator;
+
+    public function setUp(): void
+    {
+        $this->calculator = new RomanCalculator();
+    }
+
     public function test_RomanCalculator_ShouldThrowExceptionWhenValueIsIncorrect(): void
     {
         $this->expectException(\Exception::class);
-
-        $romanCalculator = new RomanCalculator();
-        $romanCalculator->sum('IIII', 'I');
+        $this->calculator->sum('IIII', 'I');
     }
 
     public function providerMapperNumerals(): \Generator
@@ -33,8 +38,7 @@ class RomanCalculatorTest extends TestCase
      */
     public function test_RomanCalculator_ShouldConvertArabicNumeralToRomanNumeral(int $arabicNumeral, string $romanNumeral): void
     {
-        $romanCalculator = new RomanCalculator();
-        $result = $romanCalculator->convertArabicNumeralToRomanNumeral($arabicNumeral);
+        $result = $this->calculator->convertArabicNumeralToRomanNumeral($arabicNumeral);
 
         $this->assertEquals($romanNumeral, $result);
     }
@@ -52,22 +56,16 @@ class RomanCalculatorTest extends TestCase
      */
     public function test_RomanCalculator_ShouldConvertRomanNumeralToArabicNumeral(): void
     {
-        $romanCalculator = new RomanCalculator();
-        $result = $romanCalculator->convertRomanNumeralToArabicNumeral('MMMDCCXXIV');
+        $result = $this->calculator->convertRomanNumeralToArabicNumeral('MMMDCCXXIV');
 
         $this->assertEquals(3724, $result);
     }
 
-    public function test_RomanCalculator_ShouldCalculateOnePlusOne(): void
-    {
-        $romanCalculator = new RomanCalculator();
-        $result = $romanCalculator->sum('I', 'I');
-
-        $this->assertEquals('II', $result);
-    }
-
     public function providerInputsToSum(): \Generator
     {
+        yield 'I + I = II' => [$inputOne = 'I', $inputTwo = 'I', $result = 'II'];
+        yield 'I + III = IV' => [$inputOne = 'I', $inputTwo = 'III', $result = 'IV'];
+        yield 'VI + III = IX' => [$inputOne = 'III', $inputTwo = 'VI', $result = 'IX'];
         yield 'MMMDCCXXIV + LXXVIII = MMMDCCCII' => [$inputOne = 'MMMDCCXXIV', $inputTwo = 'LXXVIII', $result = 'MMMDCCCII'];
         yield 'L + L = C' => [$inputOne = 'L', $inputTwo = 'L', $result = 'C'];
         yield 'XIX + XL = C' => [$inputOne = 'XIX', $inputTwo = 'XL', $result = 'LIX'];
@@ -81,8 +79,7 @@ class RomanCalculatorTest extends TestCase
      */
     public function test_RomanCalculator_ShouldSumCorrectly(string $inputOne, string $inputTwo, string $expectedResult): void
     {
-        $romanCalculator = new RomanCalculator();
-        $result = $romanCalculator->sum($inputOne, $inputTwo);
+        $result = $this->calculator->sum($inputOne, $inputTwo);
 
         $this->assertEquals($expectedResult, $result);
     }
