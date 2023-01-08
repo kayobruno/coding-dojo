@@ -45,6 +45,29 @@ class RomanCalculator
         ];
     }
 
+    public function convertRomanNumeralToArabicNumeral(string $romanNumerals): int
+    {
+        $numeralMapper = $this->numeralMapper();
+        $romanNumerals = str_split(strrev($romanNumerals));
+
+        $arabicNumeral = 0;
+        $lastNumeral = '';
+        foreach ($romanNumerals as $romanNumeral) {
+            if (isset($numeralMapper[$romanNumeral])) {
+                if ($lastNumeral !== '' && $numeralMapper[$romanNumeral] < $numeralMapper[$lastNumeral]) {
+                    $arabicNumeral -= $numeralMapper[$romanNumeral];
+                    $lastNumeral = $romanNumeral;
+                    continue;
+                }
+
+                $arabicNumeral += $numeralMapper[$romanNumeral];
+                $lastNumeral = $romanNumeral;
+            }
+        }
+
+        return $arabicNumeral;
+    }
+
     public function convertArabicNumeralToRomanNumeral(int $arabicNumeral): string
     {
         $romanNumeral = '';

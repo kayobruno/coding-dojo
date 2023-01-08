@@ -38,6 +38,25 @@ class RomanCalculatorTest extends TestCase
 
         $this->assertEquals($romanNumeral, $result);
     }
+
+    public function providerRomanNumerals(): \Generator
+    {
+        yield 'MMMDCCXXIV = 3724' => [$arabicNumeral = 3724, $romanNumeral = 'MMMDCCXXIV'];
+        yield 'LXXVIII = 98' => [$arabicNumeral = 98, $romanNumeral = 'LXXVIII'];
+        yield 'DCCCC = 900' => [$arabicNumeral = 900, $romanNumeral = 'DCCCC'];
+        yield 'MDCCLXXIV = 1774' => [$arabicNumeral = 1774, $romanNumeral = 'MDCCLXXIV'];
+    }
+
+    /**
+     * @dataProvider providerRomanNumerals
+     */
+    public function test_RomanCalculator_ShouldConvertRomanNumeralToArabicNumeral(): void
+    {
+        $romanCalculator = new RomanCalculator();
+        $result = $romanCalculator->convertRomanNumeralToArabicNumeral('MMMDCCXXIV');
+
+        $this->assertEquals(3724, $result);
+    }
 }
 
 
