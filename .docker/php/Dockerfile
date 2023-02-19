@@ -1,6 +1,6 @@
 FROM php:8.1-fpm-alpine3.16@sha256:e4fa9ffad6bfee2d988982a9164362232f3c9af570fc6e1ca04bd534c48e62b5
 
-RUN apk add $PHPIZE_DEPS --no-cache openssl postgresql-dev bash \
+RUN apk add $PHPIZE_DEPS --no-cache openssl postgresql-dev bash linux-headers \
     && pecl install xdebug redis \
     && docker-php-ext-enable xdebug \
     && docker-php-ext-install pdo pdo_pgsql \
