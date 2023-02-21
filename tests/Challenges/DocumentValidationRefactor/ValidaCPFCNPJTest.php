@@ -4,25 +4,34 @@ declare(strict_types=1);
 
 namespace Tests\Challenges\DocumentValidationRefactor;
 
+use App\Challenges\DocumentValidationRefactor\CpfValidator;
 use App\Challenges\DocumentValidationRefactor\ValidaCPFCNPJ;
 use PHPUnit\Framework\TestCase;
 
 class ValidaCPFCNPJTest extends TestCase
 {
-    public function provideValidDocuments(): \Generator
+    public function provideValidCpf(): \Generator
     {
         yield 'CPF with mask' => ['document' => '362.883.161-05'];
         yield 'CPF without mask' => ['document' => '31445078228'];
+    }
+
+    public function provideValidCnpj(): \Generator
+    {
         yield 'CNPJ with mask' => ['document' => '14.214.877/0001-90'];
         yield 'CNPJ without mask' => ['document' => '11575616000107'];
     }
 
-    public function provideInvalidDocuments(): \Generator
+    public function provideInvalidCpf(): \Generator
     {
         yield 'CPF with mask' => ['document' => '999.883.222-05'];
         yield 'CPF without mask' => ['document' => '00045078299'];
         yield 'CPF with invalid length' => ['document' => '000450'];
         yield 'CPF with repeated numbers' => ['document' => '11111111111'];
+    }
+
+    public function provideInvalidCnpj(): \Generator
+    {
         yield 'CNPJ with mask' => ['document' => '00.214.999/9999-00'];
         yield 'CNPJ without mask' => ['document' => '00575999000001'];
         yield 'CNPJ with invalid length' => ['document' => '9991575616000107'];
@@ -36,23 +45,23 @@ class ValidaCPFCNPJTest extends TestCase
     }
 
     /**
-     * @dataProvider provideValidDocuments
+     * @dataProvider provideValidCpf
      */
-    public function test_DocumentValidation_ShouldReturnTrueWhenDocumentIsValid(string $document): void
+    public function test_DocumentValidation_ShouldReturnTrueWhenCpfIsValid(string $document): void
     {
-        $documentValidator = new ValidaCPFCNPJ($document);
+        $documentValidator = new CpfValidator();
 
-        $this->assertTrue($documentValidator->valida());
+        $this->assertTrue($documentValidator->isValid($document));
     }
 
     /**
-     * @dataProvider provideInvalidDocuments
+     * @dataProvider provideInvalidCpf
      */
-    public function test_DocumentValidation_ShouldReturnFalseWhenDocumentIsInvalid(string $document): void
+    public function test_DocumentValidation_ShouldReturnFalseWhenCpfIsInvalid(string $document): void
     {
-        $documentValidator = new ValidaCPFCNPJ($document);
+        $documentValidator = new CpfValidator();
 
-        $this->assertFalse($documentValidator->valida());
+        $this->assertFalse($documentValidator->isValid($document));
     }
 
     /**
