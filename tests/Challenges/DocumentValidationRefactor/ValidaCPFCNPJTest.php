@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Challenges\DocumentValidationRefactor;
 
+use App\Challenges\DocumentValidationRefactor\CnpjValidator;
 use App\Challenges\DocumentValidationRefactor\CpfValidator;
 use App\Challenges\DocumentValidationRefactor\ValidaCPFCNPJ;
 use PHPUnit\Framework\TestCase;
@@ -55,11 +56,31 @@ class ValidaCPFCNPJTest extends TestCase
     }
 
     /**
+     * @dataProvider provideValidCnpj
+     */
+    public function test_DocumentValidation_ShouldReturnTrueWhenCnpjIsValid(string $document): void
+    {
+        $documentValidator = new CnpjValidator();
+
+        $this->assertTrue($documentValidator->isValid($document));
+    }
+
+    /**
      * @dataProvider provideInvalidCpf
      */
     public function test_DocumentValidation_ShouldReturnFalseWhenCpfIsInvalid(string $document): void
     {
         $documentValidator = new CpfValidator();
+
+        $this->assertFalse($documentValidator->isValid($document));
+    }
+
+    /**
+     * @dataProvider provideInvalidCnpj
+     */
+    public function test_DocumentValidation_ShouldReturnFalseWhenCnpjIsInvalid(string $document): void
+    {
+        $documentValidator = new CnpjValidator();
 
         $this->assertFalse($documentValidator->isValid($document));
     }
